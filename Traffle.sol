@@ -106,15 +106,21 @@ contract Raffle {
 
     function withdraw_first_winner () public {
         require(msg.sender == winners[0]," You are not first place winner!");
-        msg.sender.transfer(first_winner_prize);
+        uint prize = first_winner_prize;
+        first_winner_prize = 0;
+        msg.sender.transfer(prize);
     }
     function withdraw_second_winner () public {
         require(msg.sender == winners[1], "You are not the seconde place winner!");
-        msg.sender.transfer(second_winner_prize);
+        uint prize = second_winner_prize;
+        second_winner_prize = 0;
+        msg.sender.transfer(prize);
     }
     function withdraw_third_winner () public {
         require(msg.sender == winners[2],"You are not the third place winner!");
-        msg.sender.transfer(third_winner_prize);
+        uint prize = third_winner_prize;
+        third_winner_prize = 0;
+        msg.sender.transfer(prize);
     }
     
    function ticket_close() external only_owner returns(bool) {
@@ -130,6 +136,16 @@ contract Raffle {
         revealDeadline = now;
         STATE = raffleState.REVEAL_CLOSED;
         return true;
+    }
+    
+    function destruct_traffle() external only_owner returns(bool){
+        require(now > revealDeadline,"You cannot destruct the contract since it is before reveal deadline! ");
+        require( first_winner_prize==0, " the first place winner has not withdrawn money!");
+        require ( second_winner_prize == 0, " The second place winner has not withdrawn money!");
+        require( third_winner_prize == 0, " The third place winner has not withdrawn money!");
+        require ( charity_prize==0,"the charity_prize has not been withdrawn!");
+        require( developer_prize == 0, "the developer has not withdrwan their money!");
+        selfdestruct(owner);
     }
     
    
