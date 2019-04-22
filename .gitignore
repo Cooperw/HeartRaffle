@@ -1,0 +1,7 @@
+# This is a gitignore file. Any items in this file will be "ignored" by git.
+# Individual items can be placed here, or entire directories. All paths are
+# relative to the "root" directory of the project. That is, this file is
+# located at /.gitignore
+
+node_modules/
+package-lock.json
