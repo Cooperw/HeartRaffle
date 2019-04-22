@@ -1,1 +1,2 @@
-# cs481a3s19
+# HeartRaffle
+A Colorado State University CS481A3 Blockchain term project.
