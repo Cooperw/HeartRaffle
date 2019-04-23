@@ -114,6 +114,9 @@ contract Raffle is usingOraclize {
     }
     
     //Getters for Front-End
+    function GetRound() public view returns (uint){
+        return round;
+    }
     function GetRoundBalance(uint _round) public view returns (uint){
         return TICKET_PRICE * rounds[round].totalQuantity;
     }

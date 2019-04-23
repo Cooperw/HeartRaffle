@@ -24,7 +24,7 @@ class App extends Component {
 
 	//refresh every 5 seconds
 	componentDidMount() {
-	  this.interval = setInterval(() => this.FetchValues(), 5000);
+	  this.interval = setInterval(() => this.FetchValues(), 1000);
 	}
 
 	componentWillUnmount() {
@@ -76,9 +76,6 @@ class App extends Component {
 		this.state.EndTime = parseInt(await heartRaffle.methods.GetEndTime(this.state.RoundNumber).call({
 			from: accounts[0]
 		}));
-		this.state.DrawTime = parseInt(await heartRaffle.methods.GetDrawTime(this.state.RoundNumber).call({
-			from: accounts[0]
-		}));
 
 		//Percentages
 		this.state.PLAYER_POT = parseInt(await heartRaffle.methods.WINNERS_POT().call({
@@ -112,7 +109,7 @@ class App extends Component {
 		this.state.Winners = await heartRaffle.methods.GetRoundWinners(this.state.RoundNumber).call({
 			from: accounts[0]
 		});
-		this.state.LastWinners = await heartRaffle.methods.GetRoundWinners(this.state.RoundNumber-1).call({
+		this.state.WinnerTickets = await heartRaffle.methods.GetRoundWinnerTickets(this.state.RoundNumber).call({
 			from: accounts[0]
 		});
 		this.state.WinnersBalance_First = parseInt(await heartRaffle.methods.GetRoundWinnerBalance(this.state.RoundNumber, 0).call({
@@ -132,6 +129,9 @@ class App extends Component {
 		this.state.MyEntries = parseInt(await heartRaffle.methods.GetMyEntries(this.state.RoundNumber).call({
 			from: accounts[0]
 		}));
+		this.state.MyTickets = await heartRaffle.methods.GetMyTicketNumbers(this.state.RoundNumber).call({
+			from: accounts[0]
+		});
 
 		//Conversion
 		this.state.rateUSD = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD")
@@ -143,7 +143,9 @@ class App extends Component {
 			)
 
 		//TxFeed
-		this.state.TxFeed = await fetch("http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=0x3Da9BFaB797B9f53b733Ac0827c47ed6346694fd&startblock=4243859&endblock=99999999&sort=desc&apikey=8CCPKEI9M6M9RFIZ4MJUNDQGIUH1R6XACF")
+		this.state.TxFeed = await fetch("http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address="
+				+this.state.Contract
+				+"&startblock=0&endblock=99999999&sort=desc&apikey=8CCPKEI9M6M9RFIZ4MJUNDQGIUH1R6XACF")
 			.then(res => res.json())
 			.then(
 				(result) => {

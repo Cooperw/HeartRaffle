@@ -5,6 +5,7 @@ import { faDollarSign } from '@fortawesome/free-solid-svg-icons'
 import { faEthereum } from '@fortawesome/free-brands-svg-icons'
 import heartRaffle from "../heartRaffle";
 import web3 from "../web3";
+import TicketNumbers from "./TicketNumbers";
 
 export default class Timer extends Component {
 	state = {
@@ -25,19 +26,20 @@ export default class Timer extends Component {
 	}
 
 	CountDown(){
-		if(!this.state.DrawTime){
-			this.state.DrawTime = parseInt(this.props.state.DrawTime);
+		if(!this.state.EndTime){
+			this.state.EndTime = parseInt(this.props.state.EndTime);
 		}
-		this.state.DrawTime -= 1;
+		this.state.EndTime -= 1;
 		this.setState(this.state);
 	}
 
 	render(){
 		return(
+			<div>
 			<Jumbotron>
 				<h1><Spinner type="grow" color="success" />Round {this.props.state.RoundNumber}</h1>
 				<div style={{margin: 'auto', padding: '1em'}}>
-					<h1 id='countdown'>{this.secondsToTime(this.state.DrawTime)}</h1>
+					<h1 id='countdown'>{this.secondsToTime(this.state.EndTime)}</h1>
 				</div>
 				<hr />
 					<Row>
@@ -74,8 +76,16 @@ export default class Timer extends Component {
 						</Col>
 					</Row>
 				<hr />
-					{this.displayAccount()}
+
+					<Row>
+						<h2>Entries: {this.props.state.MyEntries} <TicketNumbers state={this.props.state}/></h2>					
+					</Row>
 			</Jumbotron>
+
+			<Jumbotron>
+				{this.displayAccount()}
+			</Jumbotron>
+			</div>
 		);
 	}
 
@@ -120,6 +130,37 @@ export default class Timer extends Component {
 					<div>Time is up, winners are being drawn.</div>
 				);
 			}
+			if(this.props.state.WinnerTickets){
+				return (
+					<div>
+						Winning tickets {this.props.state.WinnerTickets}
+						<Row>
+							<Col xs='3'>
+								<h2>1st</h2>
+							</Col>
+							<Col xs='9'>
+								<h2><a href={this.etherScanAddress(this.props.state.Winners[0])} target="_blank">{this.CutAddress(this.props.state.Winners[0])}</a></h2>
+							</Col>
+						</Row>
+						<Row>
+							<Col xs='3'>
+								<h2>2nd</h2>
+							</Col>
+							<Col xs='9'>
+								<h2><a href={this.etherScanAddress(this.props.state.Winners[1])} target="_blank">{this.CutAddress(this.props.state.Winners[1])}</a></h2>
+							</Col>
+						</Row>
+						<Row>
+							<Col xs='3'>
+								<h2>3rd</h2>
+							</Col>
+							<Col xs='9'>
+								<h2><a href={this.etherScanAddress(this.props.state.Winners[2])} target="_blank">{this.CutAddress(this.props.state.Winners[2])}</a></h2>
+							</Col>
+						</Row>
+					</div>
+				);
+			}
 			return (
 				<Button 
 					color="danger"
@@ -146,50 +187,74 @@ export default class Timer extends Component {
 			);
 		}
 
-		let etherScan = "https://rinkeby.etherscan.io/address/"+this.props.state.Account;
 		return (
 			<div>
 				<Row>
 					<Col xs='12'>
 						<h2>
-							Account: <a href={etherScan} target="_blank">{this.CutAddress(this.props.state.Account)}</a>
+							Account: <a href={this.etherScanAddress(this.props.state.Account)} target="_blank">{this.CutAddress(this.props.state.Account)}</a>
 							<br />
-							Entries: {this.props.state.MyEntries}
+							
 						</h2>
 					</Col>
 				</Row>
+				<hr />
 				<Row>
 					<Col xs='12'>
 						<Row>
+							<p
+							hidden={!this.RoundIsOver()}
+							>
+								Purchase some tickets to kick off the next round!
+							</p>
 							<Col xs='12' sm='12' md='4' lg='4'>
 								<Button className=''
-									color="primary"
+									color="success"
 									onClick={e => this.buy(1)}
 								>Buy 1 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)).toFixed(3)}</Button>
 							</Col>
 							<Col xs='12' sm='12' md='4' lg='4'>
 								<Button className=''
-									color="primary"
+									color="success"
 									onClick={e => this.buy(5)}
 								>Buy 5 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*5).toFixed(3)}</Button>
 							</Col>
 							<Col xs='12' sm='12' md='4' lg='4'>
 								<Button className=''
-									color="primary"
+									color="success"
 									onClick={e => this.buy(10)}
 								>Buy 10 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*10).toFixed(3)}</Button>
 							</Col>
 						</Row>
 						<Button
 							style={{marginTop: '1em'}}
-							color="success"
+							color="danger"
 							className='btn-block'
+							disabled={this.HasZeroBalance()}
 							onClick={e => this.withdraw()}
 							>Withdraw <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.MyBalance/(1e18)).toFixed(3)}</Button>
 					</Col>
 				</Row>
 			</div>
 		);
+	}
+
+	RoundIsOver(){
+		if(this.props.state.EndTime <= 0){
+			return true;
+		}
+		return false;
+	}
+
+	HasZeroBalance(){
+		if(this.props.state.MyBalance <= 0){
+			return true;
+		}
+		return false;
+	}
+
+	etherScanAddress(address){
+		return "https://rinkeby.etherscan.io/address/"+address;
 	}
 
 	CutAddress(address){

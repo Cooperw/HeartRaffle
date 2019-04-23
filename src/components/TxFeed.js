@@ -23,9 +23,14 @@ export default class TxFeed extends Component {
 		let index = 0;
 		let Cards = [];
 		while(count < number){
-			if(this.props.state.TxFeed.result[index].value > 0){
-				Cards.push(this.BuildCard(index));
-				count += 1;
+			try{
+				//We may not have 5 Txs yet
+				if(this.props.state.TxFeed.result[index].value > 0){
+					Cards.push(this.BuildCard(index));
+					count += 1;
+				}
+			}catch(err){
+				break;
 			}
 			index += 1;
 		}
