@@ -18,7 +18,7 @@ export default class PercentBanner extends Component {
 			<div>
 				<Row>
 					<div style={{margin: 'auto', paddingBottom: '2em'}}>
-						<h1>Total Round Balance:  <FontAwesomeIcon icon={faEthereum}/> {(this.props.RoundBalance/(1e18)).toFixed(6)}</h1>
+						<h1>Total Round Balance:  <FontAwesomeIcon icon={faEthereum}/> {(this.props.RoundBalance/(1e18)).toFixed(4)}</h1>
 					</div>
 				</Row>
 				<Row>
@@ -42,7 +42,7 @@ export default class PercentBanner extends Component {
 			<div style={{textAlign: 'center'}}>
 				<FontAwesomeIcon icon={faUser} size='9x'/>
 				<h1>Players {this.props.PLAYER_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.PlayerBalance/(1e18)).toFixed(6)}</h3>
+				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.PlayerBalance/(1e18)).toFixed(4)}</h3>
 			</div>
 		);
 	}
@@ -53,7 +53,7 @@ export default class PercentBanner extends Component {
 			<div style={{textAlign: 'center'}}>
 				<FontAwesomeIcon icon={faHandHoldingHeart} size='9x'/>
 				<h1>Charity {this.props.CHARITY_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.CharityBalance/(1e18)).toFixed(6)}</h3>
+				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.CharityBalance/(1e18)).toFixed(4)}</h3>
 			</div>
 		);
 	}
@@ -64,7 +64,7 @@ export default class PercentBanner extends Component {
 			<div style={{textAlign: 'center'}}>
 				<FontAwesomeIcon icon={faLayerGroup} size='9x'/>
 				<h1>Developers {this.props.DEVELOPER_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.DeveloperBalance/(1e18)).toFixed(6)}</h3>
+				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.DeveloperBalance/(1e18)).toFixed(4)}</h3>
 			</div>
 		);
 	}

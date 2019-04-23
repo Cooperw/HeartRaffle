@@ -1,14 +1,18 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React, { Component } from "react";
-import web3 from "./web3";
 import {Container, Row, Col, Card} from 'reactstrap'
+import web3 from "./web3";
+import heartRaffle from "./heartRaffle";
 import Timer from "./components/Timer";
 import PercentBanner from "./components/PercentBanner";
-import heartRaffle from "./heartRaffle";
+import LoadingScreen from "./components/LoadingScreen";
+import RecentWinners from "./components/RecentWinners";
+import TxFeed from "./components/TxFeed";
+import CharityGraph from "./components/CharityGraph";
 
 class App extends Component {
 	state = {
-		RoundNumber: 0
+		RoundNumber: null
 	};
 
 	//Bind our methods
@@ -20,7 +24,7 @@ class App extends Component {
 
 	//refresh every 5 seconds
 	componentDidMount() {
-	  this.interval = setInterval(() => this.FetchValues(), 15000);
+	  this.interval = setInterval(() => this.FetchValues(), 5000);
 	}
 
 	componentWillUnmount() {
@@ -29,12 +33,17 @@ class App extends Component {
 
 	//Build our page
 	render() {
+		if(this.state.RoundNumber == null){
+			return (
+				<LoadingScreen />
+			);
+		}
 		return (
 			<div style={{width: '80%', margin: 'auto', paddingTop: '5em'}}>
 				<Row>
 					<Col xs='12' sm='12' md='3' lg='3'>
-
 						<Timer state={this.state}/>
+						<TxFeed state={this.state} />
 					</Col>
 					<Col xs='12' sm='12' md='9' lg='9' style={{paddingLeft: '1em'}}>
 						{new PercentBanner(this.state).build()}
@@ -46,13 +55,22 @@ class App extends Component {
 
 	//Get updated values from contract
 	async FetchValues(){
+
 		const accounts = await web3.eth.getAccounts();
 		this.state.Account = accounts[0];
+
+		//Contract Address
+		this.state.Contract = heartRaffle.address;
 
 		//Round Number
 		this.state.RoundNumber = parseInt(await heartRaffle.methods.GetRound().call({
 			from: accounts[0]
 		}));
+
+		//Protect again null contract
+		if(this.state.RoundNumber == null){
+			return;
+		}
 
 		//Timers
 		this.state.EndTime = parseInt(await heartRaffle.methods.GetEndTime(this.state.RoundNumber).call({
@@ -94,6 +112,9 @@ class App extends Component {
 		this.state.Winners = await heartRaffle.methods.GetRoundWinners(this.state.RoundNumber).call({
 			from: accounts[0]
 		});
+		this.state.LastWinners = await heartRaffle.methods.GetRoundWinners(this.state.RoundNumber-1).call({
+			from: accounts[0]
+		});
 		this.state.WinnersBalance_First = parseInt(await heartRaffle.methods.GetRoundWinnerBalance(this.state.RoundNumber, 0).call({
 			from: accounts[0]
 		}));
@@ -118,6 +139,15 @@ class App extends Component {
 			.then(
 				(result) => {
 					return result.USD
+				}
+			)
+
+		//TxFeed
+		this.state.TxFeed = await fetch("http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=0x3Da9BFaB797B9f53b733Ac0827c47ed6346694fd&startblock=4243859&endblock=99999999&sort=desc&apikey=8CCPKEI9M6M9RFIZ4MJUNDQGIUH1R6XACF")
+			.then(res => res.json())
+			.then(
+				(result) => {
+					return result
 				}
 			)
 
