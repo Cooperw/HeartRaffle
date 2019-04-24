@@ -77,6 +77,7 @@ contract Raffle is usingOraclize {
     }
 
     function vote (address _charity, uint _tokens, uint _round) public {
+        require(block.number < rounds[_round].endBlock, "The raffle is already over.");
         require(_tokens < rounds[_round].votingBalances[msg.sender], "Insufficient voting tokens.");
         require(_tokens > 0, "Please specify number of voting tokens.");
         
@@ -203,7 +204,10 @@ contract Raffle is usingOraclize {
         }
         return count;
     }
-    function GetVotingRoundBalance(uint _round, address _charity) public view returns (uint){
+    function GetMyVotingBalance(uint _round) public view returns (uint){
+        return rounds[_round].votingBalances[msg.sender];
+    }
+    function GetVotingQuantity(uint _round) public view returns (uint){
         return rounds[_round].votingQuantity;
     }
     function GetRoundCharities(uint _round) public view returns (address[] memory){
