@@ -14,6 +14,16 @@ contract Raffle is usingOraclize {
         address[] winners;
         string winningTickets;
         bool oraclized;
+        mapping (address => uint) votingBalances;
+        mapping (address => uint) charityBalances;
+        uint votingQuantity;
+        address[] charities;
+    }
+    
+    struct Charity {
+        string name;
+        string url;
+        address owner;
     }
 
     uint constant public TICKET_PRICE = 1e15; //0.01
@@ -26,12 +36,14 @@ contract Raffle is usingOraclize {
     uint public round;
     uint public duration;
     mapping (address => uint) public balances;
-    
+    mapping (address => Charity) public charities;
+
     // stores oraclize query ids, is used to confirm that the received response from oraclize
     // is not malicious
     mapping(bytes32=>bool) validIds;
     mapping(bytes32=>uint) queryIdToRound;
 
+    event CastVotes(address charity, uint quantity);
     event TicketPurchased(address buyer, uint quantity);
     event NewOraclizeQuery(string description);
     event RandomNumber(string description, string rands);
@@ -59,8 +71,31 @@ contract Raffle is usingOraclize {
             address entry = msg.sender;
             rounds[round].entries.push(entry);
             rounds[round].totalQuantity += 1;
+            rounds[round].votingBalances[msg.sender] += 1;
         }
         emit TicketPurchased(msg.sender, quantity);
+    }
+
+    function vote (address _charity, uint _tokens, uint _round) public {
+        require(_tokens < rounds[_round].votingBalances[msg.sender], "Insufficient voting tokens.");
+        require(_tokens > 0, "Please specify number of voting tokens.");
+        
+        rounds[_round].votingBalances[msg.sender] -= _tokens;
+        if(rounds[_round].charityBalances[_charity] <= 0){
+            rounds[_round].charities.push(_charity);
+        }
+        rounds[_round].charityBalances[_charity] += _tokens;
+        rounds[_round].votingQuantity += _tokens;
+        
+        emit CastVotes(_charity,_tokens);
+    }
+    
+    function register (string memory _name, string memory _url) public{
+        Charity memory charity;
+        charity.name = _name;
+        charity.url = _url;
+        charity.owner = msg.sender;
+        charities[msg.sender] = charity;
     }
 
     function drawWinners (uint _round) public {
@@ -167,6 +202,21 @@ contract Raffle is usingOraclize {
             }
         }
         return count;
+    }
+    function GetVotingRoundBalance(uint _round, address _charity) public view returns (uint){
+        return rounds[_round].votingQuantity;
+    }
+    function GetRoundCharities(uint _round) public view returns (address[] memory){
+        return rounds[_round].charities;
+    }
+    function GetCharityRoundBalance(uint _round, address _charity) public view returns (uint){
+        return rounds[_round].charityBalances[_charity];
+    }
+    function GetCharityName(address _charity) public view returns (string memory){
+        return charities[_charity].name;
+    }
+    function GetCharityUrl(address _charity) public view returns (string memory){
+        return charities[_charity].url;
     }
     
     //String library - https://github.com/willitscale/solidity-util/blob/master/lib/Strings.sol
