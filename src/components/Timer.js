@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {Container, Row, Col, Card, Button, Jumbotron, Spinner} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign } from '@fortawesome/free-solid-svg-icons'
+import { faDollarSign, faMinus, faPlus, faFastForward } from '@fortawesome/free-solid-svg-icons'
 import { faEthereum } from '@fortawesome/free-brands-svg-icons'
 import heartRaffle from "../heartRaffle";
 import web3 from "../web3";
@@ -9,7 +9,7 @@ import TicketNumbers from "./TicketNumbers";
 
 export default class Timer extends Component {
 	state = {
-		
+		buyAmount: 5
 	};
 
 	constructor(props){
@@ -36,57 +36,83 @@ export default class Timer extends Component {
 	render(){
 		return(
 			<div>
-			<Jumbotron>
-				<h1><Spinner type="grow" color="success" />Round {this.props.state.RoundNumber}</h1>
-				<div style={{margin: 'auto', padding: '1em'}}>
-					<h1 id='countdown'>{this.secondsToTime(this.state.EndTime)}</h1>
+			<Jumbotron style={{padding: '1em'}}>
+				<div >
+					<h3 style={{display: 'inline-block'}}><Spinner type="grow" color="success" />Round {this.props.state.RoundNumber}</h3> &nbsp;
+					<Button color="secondary"
+						className="btn-sm"
+						onClick={e => this.props.minusRound()}
+					><FontAwesomeIcon icon={faMinus}/></Button> &nbsp;
+					<Button color="secondary"
+						className="btn-sm"
+						onClick={e => this.props.plusRound()}
+					><FontAwesomeIcon icon={faPlus}/></Button> &nbsp;
+					<Button color="secondary"
+						className="btn-sm"
+						onClick={e => this.props.fetchRound()}
+					><FontAwesomeIcon icon={faFastForward}/></Button>
 				</div>
 				<hr />
 					<Row>
 						<Col xs='3'>
-							<h2>1st</h2>
+							<h5>1st</h5>
 						</Col>
 						<Col xs='5'>
-							<h2><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_First/(1e18)).toFixed(4)}</h2>
+							<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_First/(1e18)).toFixed(4)}</h5>
 						</Col>
 						<Col xs='4'>
-							<h2><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_First/(1e18)*this.props.state.rateUSD).toFixed(2)}</h2>
+							<h5><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_First/(1e18)*this.props.state.rateUSD).toFixed(2)}</h5>
 						</Col>
 					</Row>
 					<Row>
 						<Col xs='3'>
-							<h2>2nd</h2>
+							<h5>2nd</h5>
 						</Col>
 						<Col xs='5'>
-							<h2><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_Second/(1e18)).toFixed(4)}</h2>
+							<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_Second/(1e18)).toFixed(4)}</h5>
 						</Col>
 						<Col xs='4'>
-							<h2><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_Second/(1e18)*this.props.state.rateUSD).toFixed(2)}</h2>
+							<h5><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_Second/(1e18)*this.props.state.rateUSD).toFixed(2)}</h5>
 						</Col>
 					</Row>
 					<Row>
 						<Col xs='3'>
-							<h2>3rd</h2>
+							<h5>3rd</h5>
 						</Col>
 						<Col xs='5'>
-							<h2><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_Third/(1e18)).toFixed(4)}</h2>
+							<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.WinnersBalance_Third/(1e18)).toFixed(4)}</h5>
 						</Col>
 						<Col xs='4'>
-							<h2><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_Third/(1e18)*this.props.state.rateUSD).toFixed(2)}</h2>
+							<h5><FontAwesomeIcon icon={faDollarSign}/> {(this.props.state.WinnersBalance_Third/(1e18)*this.props.state.rateUSD).toFixed(2)}</h5>
 						</Col>
+					</Row>
+
+					<Row>
+						<div style={{margin: 'auto', padding: '1em'}}>
+							<h1 id='countdown'>{this.secondsToTime(this.state.EndTime)}</h1>
+						</div>
 					</Row>
 				<hr />
 
 					<Row>
-						<h2>Entries: {this.props.state.MyEntries} <TicketNumbers state={this.props.state}/></h2>					
+						<Col>
+							<h3>Entries: {this.props.state.MyEntries} <TicketNumbers state={this.props.state}/></h3>					
+						</Col>
 					</Row>
-			</Jumbotron>
-
-			<Jumbotron>
 				{this.displayAccount()}
 			</Jumbotron>
 			</div>
 		);
+	}
+
+	minusBuy(){
+		this.state.buyAmount -= 1;
+		this.setState(this.state);
+	}
+
+	plusBuy(){
+		this.state.buyAmount += 1;
+		this.setState(this.state);
 	}
 
 	async buy(amount){
@@ -113,6 +139,17 @@ export default class Timer extends Component {
 
 	async drawWinners(){
 		try{
+			let estimate = heartRaffle.methods.drawWinners(this.props.state.RoundNumber)
+					    .estimateGas(
+						{
+						    from: this.props.state.Account
+						}, function(error, estimatedGas) {
+							alert(error +":"+estimatedGas);
+						}
+					    );
+
+			console.log('Estimate:' +estimate);
+
 			await heartRaffle.methods.drawWinners(this.props.state.RoundNumber).send({
 				from: this.props.state.Account,
 			});
@@ -124,7 +161,7 @@ export default class Timer extends Component {
 	secondsToTime(seconds){
 		var seconds = parseInt(seconds, 10);
 
-		if(seconds <= 0){
+		if(this.RoundIsOver()){
 			if(this.props.state.Account == undefined){
 				return (
 					<div>Time is up, winners are being drawn.</div>
@@ -162,7 +199,7 @@ export default class Timer extends Component {
 				);
 			}
 			return (
-				<Button 
+				<Button
 					color="danger"
 					className='btn-block'
 					onClick={e => this.drawWinners()}
@@ -191,50 +228,51 @@ export default class Timer extends Component {
 			<div>
 				<Row>
 					<Col xs='12'>
-						<h2>
+						<h3>
 							Account: <a href={this.etherScanAddress(this.props.state.Account)} target="_blank">{this.CutAddress(this.props.state.Account)}</a>
 							<br />
-							
-						</h2>
+						</h3>
 					</Col>
 				</Row>
 				<hr />
-				<Row>
-					<Col xs='12'>
 						<Row>
-							<p
-							hidden={!this.RoundIsOver()}
-							>
-								Purchase some tickets to kick off the next round!
-							</p>
-							<Col xs='12' sm='12' md='4' lg='4'>
-								<Button className=''
-									color="success"
-									onClick={e => this.buy(1)}
-								>Buy 1 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)).toFixed(3)}</Button>
-							</Col>
-							<Col xs='12' sm='12' md='4' lg='4'>
-								<Button className=''
-									color="success"
-									onClick={e => this.buy(5)}
-								>Buy 5 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*5).toFixed(3)}</Button>
-							</Col>
-							<Col xs='12' sm='12' md='4' lg='4'>
-								<Button className=''
-									color="success"
-									onClick={e => this.buy(10)}
-								>Buy 10 <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*10).toFixed(3)}</Button>
+							<Col xs='12'>
+								<p hidden={!this.RoundIsOver()}>
+									Purchase some tickets to kick off the next round!
+								</p>
 							</Col>
 						</Row>
-						<Button
-							style={{marginTop: '1em'}}
-							color="danger"
-							className='btn-block'
-							disabled={this.HasZeroBalance()}
-							onClick={e => this.withdraw()}
-							>Withdraw <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.MyBalance/(1e18)).toFixed(3)}</Button>
-					</Col>
-				</Row>
+						<Row>
+							<Col xs='2'>
+								<Button className='btn-sm btn-block'
+									color="success"
+									onClick={e => this.minusBuy()}
+								><FontAwesomeIcon icon={faMinus}/></Button>
+							</Col>
+							<Col xs='8'>
+								<Button className='btn-block'
+									color="success"
+									onClick={e => this.buy(this.state.buyAmount)}
+								>Buy {this.state.buyAmount} <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*this.state.buyAmount).toFixed(3)}</Button>
+							</Col>
+							<Col xs='2'>
+								<Button className='btn-sm btn-block'
+									color="success"
+									onClick={e => this.plusBuy()}
+								><FontAwesomeIcon icon={faPlus}/></Button>
+							</Col>
+						</Row>
+						<Row>
+							<Col xs='12'>
+								<Button
+									style={{marginTop: '1em'}}
+									color="secondary"
+									className='btn-block'
+									disabled={this.HasZeroBalance()}
+									onClick={e => this.withdraw()}
+								>Withdraw <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.MyBalance/(1e18)).toFixed(3)}</Button>
+							</Col>
+						</Row>
 			</div>
 		);
 	}

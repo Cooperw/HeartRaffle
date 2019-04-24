@@ -46,11 +46,14 @@ class TicketNumbers extends React.Component {
 	}
 
 	formatTickets(){
-		let str = "";
-		for(let i = 0; i < this.props.state.MyTickets.length; i++){
-			str += parseInt(this.props.state.MyTickets[i])+", ";
+		if(this.props.state.MyTickets){
+			let str = "";
+			for(let i = 0; i < this.props.state.MyTickets.length; i++){
+				str += parseInt(this.props.state.MyTickets[i])+", ";
+			}
+			return (str).substring(0,(str).length-2);
 		}
-		return (str).substring(0,(str).length-2);
+		return "";
 	}
 
 	winnerTickets(){

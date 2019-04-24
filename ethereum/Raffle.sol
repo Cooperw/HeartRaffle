@@ -118,13 +118,13 @@ contract Raffle is usingOraclize {
         return round;
     }
     function GetRoundBalance(uint _round) public view returns (uint){
-        return TICKET_PRICE * rounds[round].totalQuantity;
+        return TICKET_PRICE * rounds[_round].totalQuantity;
     }
     function GetRoundPlayerBalance(uint _round) public view returns (uint){
-        return TICKET_PRICE * rounds[round].totalQuantity * WINNERS_POT / 100;
+        return TICKET_PRICE * rounds[_round].totalQuantity * WINNERS_POT / 100;
     }
     function GetRoundCharityBalance(uint _round) public view returns (uint){
-        return TICKET_PRICE * rounds[round].totalQuantity * CHARITY_POT / 100;
+        return TICKET_PRICE * rounds[_round].totalQuantity * CHARITY_POT / 100;
     }
     function GetRoundDeveloperBalance(uint _round) public view returns (uint){
         return GetRoundBalance(_round) - GetRoundPlayerBalance(_round) - GetRoundCharityBalance(_round);

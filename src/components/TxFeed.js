@@ -11,8 +11,8 @@ export default class TxFeed extends Component {
 
 	render(){
 		return(
-			<Jumbotron>
-				<h1><Spinner type="grow" color="primary" />Recent TxFeed</h1>
+			<Jumbotron style={{padding: '1em'}}>
+				<h3><Spinner type="grow" color="primary" />Recent TxFeed</h3>
 				{this.GenerateFeed(5)}
 			</Jumbotron>
 		);
@@ -69,7 +69,7 @@ export default class TxFeed extends Component {
 								<Col xs='6' sm='6' md='6' lg='6'>
 									{action} 
 								</Col>
-								<Col xs='6' sm='6' md='6' lg='6'>
+								<Col xs='6' sm='6' md='6' lg='6' style={{textAlign: 'right'}}>
 									<FontAwesomeIcon icon={faEthereum}/>{(amount/(1e18)).toFixed(4)}
 								</Col>
 							</Row>

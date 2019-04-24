@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React, { Component } from "react";
-import {Container, Row, Col, Card} from 'reactstrap'
+import {Container, Row, Col, Card, Button} from 'reactstrap'
 import web3 from "./web3";
 import heartRaffle from "./heartRaffle";
 import Timer from "./components/Timer";
@@ -18,8 +18,10 @@ class App extends Component {
 	//Bind our methods
 	constructor(props){
 		super(props);
-		
-		this.FetchValues();
+		this.FetchRound();
+
+		this.minusRound = this.minusRound.bind(this);
+		this.plusRound = this.plusRound.bind(this);
 	}
 
 	//refresh every 5 seconds
@@ -33,24 +35,49 @@ class App extends Component {
 
 	//Build our page
 	render() {
-		if(this.state.RoundNumber == null){
+		if(this.state.RoundNumber == null || this.state.PLAYER_POT == null){
 			return (
 				<LoadingScreen />
 			);
 		}
 		return (
-			<div style={{width: '80%', margin: 'auto', paddingTop: '5em'}}>
+			<div style={{width: '90%', margin: 'auto', paddingTop: '5em'}}>
 				<Row>
 					<Col xs='12' sm='12' md='3' lg='3'>
-						<Timer state={this.state}/>
+						<Timer state={this.state}
+							fetchRound={this.FetchRound}
+							minusRound={this.minusRound}
+							plusRound={this.plusRound}/>
 						<TxFeed state={this.state} />
 					</Col>
 					<Col xs='12' sm='12' md='9' lg='9' style={{paddingLeft: '1em'}}>
-						{new PercentBanner(this.state).build()}
+						<PercentBanner state={this.state} />
 					</Col>
 				</Row>
 			</div>
 		);
+	}
+
+	async FetchRound(){
+		const accounts = await web3.eth.getAccounts();
+		this.state.Account = accounts[0];
+
+		//Round Number
+		this.state.RoundNumber = parseInt(await heartRaffle.methods.GetRound().call({
+			from: accounts[0]
+		}));
+
+		this.setState(this.state);
+	}
+
+	plusRound(){
+		this.state.RoundNumber += 1;
+		this.setState(this.state);
+	}
+
+	minusRound(){
+		this.state.RoundNumber -= 1;
+		this.setState(this.state);
 	}
 
 	//Get updated values from contract
@@ -62,10 +89,6 @@ class App extends Component {
 		//Contract Address
 		this.state.Contract = heartRaffle.address;
 
-		//Round Number
-		this.state.RoundNumber = parseInt(await heartRaffle.methods.GetRound().call({
-			from: accounts[0]
-		}));
 
 		//Protect again null contract
 		if(this.state.RoundNumber == null){

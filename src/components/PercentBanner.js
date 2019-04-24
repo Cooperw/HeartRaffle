@@ -5,20 +5,20 @@ import { faUser, faHandHoldingHeart, faLayerGroup } from '@fortawesome/free-soli
 import { faEthereum } from '@fortawesome/free-brands-svg-icons'
 
 export default class PercentBanner extends Component {
+	state = {
+
+	};
 
 	constructor(props){
 		super(props);
-		this.BuildPlayerCard = this.BuildPlayerCard.bind(this);
-		this.BuildCharityCard = this.BuildCharityCard.bind(this);
-		this.BuildDevelopersCard = this.BuildDevelopersCard.bind(this);
 	}
 
-	build(){
+	render(){
 		return(
 			<div>
 				<Row>
 					<div style={{margin: 'auto', paddingBottom: '2em'}}>
-						<h1>Total Round Balance:  <FontAwesomeIcon icon={faEthereum}/> {(this.props.RoundBalance/(1e18)).toFixed(4)}</h1>
+						<h3>Total Round Balance:  <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.RoundBalance/(1e18)).toFixed(4)}</h3>
 					</div>
 				</Row>
 				<Row>
@@ -40,9 +40,9 @@ export default class PercentBanner extends Component {
 	BuildPlayerCard(){
 		return(
 			<div style={{textAlign: 'center'}}>
-				<FontAwesomeIcon icon={faUser} size='9x'/>
-				<h1>Players {this.props.PLAYER_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.PlayerBalance/(1e18)).toFixed(4)}</h3>
+				<FontAwesomeIcon icon={faUser} size='5x'/>
+				<h3>Players {this.props.state.PLAYER_POT}%</h3>
+				<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.PlayerBalance/(1e18)).toFixed(4)}</h5>
 			</div>
 		);
 	}
@@ -51,9 +51,9 @@ export default class PercentBanner extends Component {
 	BuildCharityCard(){
 		return(
 			<div style={{textAlign: 'center'}}>
-				<FontAwesomeIcon icon={faHandHoldingHeart} size='9x'/>
-				<h1>Charity {this.props.CHARITY_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.CharityBalance/(1e18)).toFixed(4)}</h3>
+				<FontAwesomeIcon icon={faHandHoldingHeart} size='5x'/>
+				<h3>Charity {this.props.state.CHARITY_POT}%</h3>
+				<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.CharityBalance/(1e18)).toFixed(4)}</h5>
 			</div>
 		);
 	}
@@ -62,9 +62,9 @@ export default class PercentBanner extends Component {
 	BuildDevelopersCard(){
 		return(
 			<div style={{textAlign: 'center'}}>
-				<FontAwesomeIcon icon={faLayerGroup} size='9x'/>
-				<h1>Developers {this.props.DEVELOPER_POT}%</h1>
-				<h3><FontAwesomeIcon icon={faEthereum}/> {(this.props.DeveloperBalance/(1e18)).toFixed(4)}</h3>
+				<FontAwesomeIcon icon={faLayerGroup} size='5x'/>
+				<h3>Developers {this.props.state.DEVELOPER_POT}%</h3>
+				<h5><FontAwesomeIcon icon={faEthereum}/> {(this.props.state.DeveloperBalance/(1e18)).toFixed(4)}</h5>
 			</div>
 		);
 	}
