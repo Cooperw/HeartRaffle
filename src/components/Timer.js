@@ -107,6 +107,9 @@ export default class Timer extends Component {
 
 	minusBuy(){
 		this.state.buyAmount -= 1;
+		if(this.state.buyAmount < 1){
+			this.state.buyAmount = 1;
+		}
 		this.setState(this.state);
 	}
 
@@ -243,20 +246,16 @@ export default class Timer extends Component {
 							</Col>
 						</Row>
 						<Row>
-							<Col xs='2'>
-								<Button className='btn-sm btn-block'
+							<Col style={{textAlign:'center'}}>
+								<Button className='btn-sm'
 									color="success"
 									onClick={e => this.minusBuy()}
-								><FontAwesomeIcon icon={faMinus}/></Button>
-							</Col>
-							<Col xs='8'>
-								<Button className='btn-block'
+								><FontAwesomeIcon icon={faMinus}/></Button>&nbsp;
+								<Button className='btn-sm'
 									color="success"
 									onClick={e => this.buy(this.state.buyAmount)}
-								>Buy {this.state.buyAmount} <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*this.state.buyAmount).toFixed(3)}</Button>
-							</Col>
-							<Col xs='2'>
-								<Button className='btn-sm btn-block'
+								>Buy {this.state.buyAmount} <FontAwesomeIcon icon={faEthereum}/> {(this.props.state.TICKET_PRICE/(1e18)*this.state.buyAmount).toFixed(3)}</Button>&nbsp;
+								<Button className='btn-sm'
 									color="success"
 									onClick={e => this.plusBuy()}
 								><FontAwesomeIcon icon={faPlus}/></Button>

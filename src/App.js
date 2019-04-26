@@ -52,6 +52,7 @@ class App extends Component {
 					</Col>
 					<Col xs='12' sm='12' md='9' lg='9' style={{paddingLeft: '1em'}}>
 						<PercentBanner state={this.state} />
+						<CharityGraph state={this.state} />
 					</Col>
 				</Row>
 			</div>
@@ -156,6 +157,27 @@ class App extends Component {
 			from: accounts[0]
 		});
 
+		//Charity values
+		this.state.MyVotingBalance = parseInt(await heartRaffle.methods.GetMyVotingBalance(this.state.RoundNumber).call({
+			from: accounts[0]
+		}));
+		this.state.VotingQuantity = parseInt(await heartRaffle.methods.GetVotingQuantity(this.state.RoundNumber).call({
+			from: accounts[0]
+		}));
+		this.state.RoundCharityAddresses = await heartRaffle.methods.GetRoundCharities(this.state.RoundNumber).call({
+			from: accounts[0]
+		});
+		this.state.RoundCharities = [];
+		if(this.state.RoundCharityAddresses){
+			for(let address of this.state.RoundCharityAddresses){
+				this.state.RoundCharities.push({
+					'owner': address,
+					'name' : await heartRaffle.methods.GetCharityName(address).call({from: accounts[0]}),
+					'url' : await heartRaffle.methods.GetCharityUrl(address).call({from: accounts[0]}),
+					'votes' : parseInt(await heartRaffle.methods.GetCharityRoundBalance(this.state.RoundNumber, address).call({from: accounts[0]}))
+				});
+			}
+		}
 		//Conversion
 		this.state.rateUSD = await fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD")
 			.then(res => res.json())

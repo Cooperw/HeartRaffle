@@ -1,7 +1,7 @@
 import web3 from "./web3";
 
 //Target contract address
-const address = "0x6d06b3aeab23c1c298efea6140e69cb5e078c112";
+const address = "0x50e1F765ce9eC5B21A202453Ee21B8c750fFA5D1";
 
 //ABI taken from web source
 const abi = [
@@ -77,12 +77,81 @@ const abi = [
 	},
 	{
 		"constant": true,
+		"inputs": [
+			{
+				"name": "_round",
+				"type": "uint256"
+			}
+		],
+		"name": "GetMyVotingBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_round",
+				"type": "uint256"
+			},
+			{
+				"name": "_charity",
+				"type": "address"
+			}
+		],
+		"name": "GetCharityRoundBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [],
 		"name": "TICKET_PRICE",
 		"outputs": [
 			{
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "charities",
+		"outputs": [
+			{
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"name": "owner",
+				"type": "address"
 			}
 		],
 		"payable": false,
@@ -149,6 +218,28 @@ const abi = [
 		"constant": false,
 		"inputs": [
 			{
+				"name": "_charity",
+				"type": "address"
+			},
+			{
+				"name": "_tokens",
+				"type": "uint256"
+			},
+			{
+				"name": "_round",
+				"type": "uint256"
+			}
+		],
+		"name": "vote",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
 				"name": "_myid",
 				"type": "bytes32"
 			},
@@ -171,6 +262,24 @@ const abi = [
 		"constant": false,
 		"inputs": [],
 		"name": "withdraw",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_url",
+				"type": "string"
+			}
+		],
+		"name": "register",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -328,6 +437,48 @@ const abi = [
 			{
 				"name": "oraclized",
 				"type": "bool"
+			},
+			{
+				"name": "votingQuantity",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_round",
+				"type": "uint256"
+			}
+		],
+		"name": "GetVotingQuantity",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_round",
+				"type": "uint256"
+			}
+		],
+		"name": "GetRoundCharities",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address[]"
 			}
 		],
 		"payable": false,
@@ -341,6 +492,44 @@ const abi = [
 		"outputs": [],
 		"payable": true,
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_charity",
+				"type": "address"
+			}
+		],
+		"name": "GetCharityUrl",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_charity",
+				"type": "address"
+			}
+		],
+		"name": "GetCharityName",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -466,6 +655,23 @@ const abi = [
 		"payable": true,
 		"stateMutability": "payable",
 		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "charity",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "CastVotes",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
