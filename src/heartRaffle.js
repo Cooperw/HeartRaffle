@@ -1,7 +1,7 @@
 import web3 from "./web3";
 
 //Target contract address
-const address = "0xbba9cebe76332ff7942f1cb8b52fe60bdf9890f7";
+const address = "0x0b24c62865fd568833fefd151fb2e3d5a3b0a728";
 
 //ABI taken from web source
 const abi = [
@@ -742,6 +742,5 @@ const abi = [
 		"type": "event"
 	}
 ]
-	
 
 export default new web3.eth.Contract(abi, address);
