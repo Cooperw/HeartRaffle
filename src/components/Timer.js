@@ -142,17 +142,6 @@ export default class Timer extends Component {
 
 	async drawWinners(){
 		try{
-			let estimate = heartRaffle.methods.drawWinners(this.props.state.RoundNumber)
-					    .estimateGas(
-						{
-						    from: this.props.state.Account
-						}, function(error, estimatedGas) {
-							alert(error +":"+estimatedGas);
-						}
-					    );
-
-			console.log('Estimate:' +estimate);
-
 			await heartRaffle.methods.drawWinners(this.props.state.RoundNumber).send({
 				from: this.props.state.Account,
 			});

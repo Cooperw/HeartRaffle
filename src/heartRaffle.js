@@ -1,7 +1,7 @@
 import web3 from "./web3";
 
 //Target contract address
-const address = "0x50e1F765ce9eC5B21A202453Ee21B8c750fFA5D1";
+const address = "0xbba9cebe76332ff7942f1cb8b52fe60bdf9890f7";
 
 //ABI taken from web source
 const abi = [
@@ -152,6 +152,25 @@ const abi = [
 			{
 				"name": "owner",
 				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_round",
+				"type": "uint256"
+			}
+		],
+		"name": "GetVotingQuantity",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -440,25 +459,6 @@ const abi = [
 			},
 			{
 				"name": "votingQuantity",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_round",
-				"type": "uint256"
-			}
-		],
-		"name": "GetVotingQuantity",
-		"outputs": [
-			{
-				"name": "",
 				"type": "uint256"
 			}
 		],

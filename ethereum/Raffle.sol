@@ -111,7 +111,30 @@ contract Raffle is usingOraclize {
         balances[DEV_ADDRESS] += TICKET_PRICE * rounds[_round].totalQuantity * DEVELOPER_POT / 100;
         
         // pick 3 winners
-        _consultTheOracle(_round);
+        //_consultTheOracle(_round);
+        _tempCallback(_round);
+    }
+    
+    function _tempRand(uint _round, uint _number) internal{
+        uint winner_number = uint(blockhash(rounds[_round].endBlock+_number)) % (rounds[_round].totalQuantity-1);
+        rounds[_round].winners[_number] = rounds[_round].entries[winner_number];
+    }
+    
+    function _tempCallback(uint _round) internal{
+        string memory result = "test";
+        _tempRand(_round, 0);
+        _tempRand(_round, 1);
+        _tempRand(_round, 2);
+        
+        for(uint i = 0; i < 3; i++){
+            //Allocate portion of pot to winner
+            uint prize = TICKET_PRICE * rounds[_round].totalQuantity * WINNERS_POT * (3-i) / 600; //6*100 parts*percent
+            balances[rounds[_round].winners[i]] += prize;
+            rounds[_round].totalPrizes += prize;
+            emit WinnerPicked(i, rounds[_round].winners[i], prize);
+        }
+        rounds[_round].winningTickets = result;
+        emit RandomNumber("Winning tickets:", result);
     }
     
     function _consultTheOracle(uint _round) internal {

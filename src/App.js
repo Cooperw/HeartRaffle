@@ -22,11 +22,12 @@ class App extends Component {
 
 		this.minusRound = this.minusRound.bind(this);
 		this.plusRound = this.plusRound.bind(this);
+		this.FetchRound = this.FetchRound.bind(this);
 	}
 
 	//refresh every 5 seconds
 	componentDidMount() {
-	  this.interval = setInterval(() => this.FetchValues(), 1000);
+	  this.interval = setInterval(() => this.FetchValues(), 5000);
 	}
 
 	componentWillUnmount() {
@@ -73,11 +74,17 @@ class App extends Component {
 
 	plusRound(){
 		this.state.RoundNumber += 1;
+		if(this.state.RoundNumber > this.state.MaxRoundNumber){
+			this.state.RoundNumber = this.state.MaxRoundNumber;
+		}
 		this.setState(this.state);
 	}
 
 	minusRound(){
 		this.state.RoundNumber -= 1;
+		if(this.state.RoundNumber < 1){
+			this.state.RoundNumber = 1;
+		}
 		this.setState(this.state);
 	}
 
@@ -90,6 +97,10 @@ class App extends Component {
 		//Contract Address
 		this.state.Contract = heartRaffle.address;
 
+		//Current Round
+		this.state.MaxRoundNumber = parseInt(await heartRaffle.methods.GetRound().call({
+			from: accounts[0]
+		}));
 
 		//Protect again null contract
 		if(this.state.RoundNumber == null){
