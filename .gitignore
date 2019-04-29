@@ -3,5 +3,8 @@
 # relative to the "root" directory of the project. That is, this file is
 # located at /.gitignore
 
-node_modules/
+node_modules/*
 package-lock.json
+
+!node_modules/react-d3-components/lib/Axis.js
+!node_modules/react-d3-components/lib/Bar.js
