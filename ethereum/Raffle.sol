@@ -2,6 +2,17 @@ pragma solidity ^0.5.0;
 
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
+contract HeartCoinERC20 {
+    function totalSupply() public pure returns (uint);
+    function balanceOf(address tokenOwner) public view returns (uint balance);
+    function allowance(address tokenOwner, address spender) public view returns (uint remaining);
+    function transfer(address to, uint tokens) public returns (bool success);
+    function approve(address spender, uint tokens) public returns (bool success);
+    function transferFrom(address from, address to, uint tokens) public returns (bool success);
+    event Transfer(address indexed from, address indexed to, uint tokens);
+    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+}
+
 // 80% of this contract is from https://github.com/k26dr/ethereum-games/blob/master/contracts/Lotteries.sol
 // OraclizeAPI from https://github.com/Dziubutkus/lottery-smart-contract/blob/master/contracts/Lottery.sol
 
@@ -56,6 +67,37 @@ contract Raffle is usingOraclize {
         rounds[round].endBlock = block.number + duration;
         rounds[round].winners = [address(0),address(0),address(0)];
         DEV_ADDRESS = msg.sender;
+    }
+
+    // Heart Coin Transfer
+    address tracker_0x_address = 0xcd4471B5c757238F0807b65958F7AA4483d5A688; // Heart Coin Address
+    //mapping ( address => uint256 ) public balances;
+
+    function depositHC(uint tokens) public {
+        // transfer HC to this contract
+        // add the deposited tokens into existing balance
+        balances[msg.sender]+= tokens;
+        // transfer the tokens from the sender to this contract
+        HeartCoinERC20(tracker_0x_address).transferFrom(msg.sender, address(this), tokens);
+    }
+
+    function buyHC(uint tokens) payable public {
+        //force user to input ETH
+        require(msg.value == tokens);
+        tokens = tokens/1000000000000000000;
+        HeartCoinERC20(tracker_0x_address).transferFrom(0x3e1466B3Ad0d4d82dF132e177e52AfC2aAc8f860, msg.sender, tokens);
+    }
+
+    function balanceOfHC() public view returns(uint){
+        uint result = HeartCoinERC20(tracker_0x_address).balanceOf(msg.sender);
+        return result;
+    }
+
+    function withdrawHC(uint tokens) public {
+        // transfer HC out of this contract
+        require(balances[msg.sender]>=tokens);
+        balances[msg.sender] -= tokens;
+        HeartCoinERC20(tracker_0x_address).transferFrom(address(this), msg.sender, tokens);
     }
 
     function buy () payable public {
